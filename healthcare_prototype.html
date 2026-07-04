@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MediConnect — Emergency Healthcare</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --red: #E8392A;
+    --red-soft: #FFF0EE;
+    --red-mid: #FDDBD7;
+    --green: #1A9E6E;
+    --green-soft: #E8F8F1;
+    --amber: #E07B12;
+    --amber-soft: #FFF4E5;
+    --bg: #F7F5F2;
+    --card: #FFFFFF;
+    --text: #1A1A18;
+    --muted: #7A7870;
+    --border: #E8E5E0;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* Header */
+  header {
+    background: var(--red);
+    color: #fff;
+    padding: 18px 20px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo-mark {
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 18px;
+  }
+  header h1 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.3px; }
+  header p { font-size: 12px; opacity: 0.8; margin-top: 1px; }
+  .emergency-btn {
+    margin-left: auto;
+    background: #fff;
+    color: var(--red);
+    border: none;
+    border-radius: 20px;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 5px;
+  }
+
+  /* Nav Tabs */
+  nav {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  nav button {
+    flex-shrink: 0;
+    padding: 13px 18px;
+    border: none;
+    background: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2.5px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: flex; align-items: center; gap: 6px;
+  }
+  nav button.active {
+    color: var(--red);
+    border-bottom-color: var(--red);
+    font-weight: 500;
+  }
+
+  /* Main */
+  main { padding: 16px; max-width: 520px; margin: 0 auto; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 12px;
+  }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-sub { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 20px 0 10px;
+  }
+
+  /* Badges */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 500;
+    padding: 3px 10px; border-radius: 20px;
+  }
+  .badge-green { background: var(--green-soft); color: var(--green); }
+  .badge-red { background: var(--red-soft); color: var(--red); }
+  .badge-amber { background: var(--amber-soft); color: var(--amber); }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block; }
+
+  /* Symptom Checker */
+  .symptom-input-wrap { position: relative; }
+  .symptom-input {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .symptom-input:focus { border-color: var(--red); }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0; }
+  .chip {
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    background: var(--card);
+    transition: all 0.15s;
+    color: var(--muted);
+  }
+  .chip:hover { border-color: var(--red); color: var(--red); background: var(--red-soft); }
+  .check-btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--red);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: opacity 0.2s;
+  }
+  .check-btn:hover { opacity: 0.9; }
+  .result-box {
+    margin-top: 14px;
+    padding: 16px;
+    border-radius: 12px;
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .result-box.show { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .result-dept { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+  .result-action { font-size: 13px; margin-top: 8px; }
+
+  /* Doctor Card */
+  .doctor-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .doctor-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .avatar {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 15px;
+    flex-shrink: 0;
+  }
+  .doctor-info { flex: 1; }
+  .doctor-name { font-weight: 500; font-size: 14px; }
+  .doctor-dept { font-size: 12px; color: var(--muted); }
+  .doctor-shift { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* Blood Bank */
+  .blood-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .blood-cell {
+    border-radius: 10px;
+    padding: 10px 6px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .blood-cell .bg { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; }
+  .blood-cell .bstatus { font-size: 10px; margin-top: 3px; }
+  .blood-cell.avail { background: var(--green-soft); border-color: #B6E8D5; }
+  .blood-cell.avail .bg { color: var(--green); }
+  .blood-cell.avail .bstatus { color: var(--green); }
+  .blood-cell.unavail { background: #F9F8F6; }
+  .blood-cell.unavail .bg { color: #C0BDB5; }
+  .blood-cell.unavail .bstatus { color: #C0BDB5; }
+  .donor-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .donor-row:last-child { border-bottom: none; }
+  .call-btn {
+    background: var(--green-soft);
+    color: var(--green);
+    border: none;
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+  }
+
+  /* Emergency Routing */
+  .hospital-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 14px;
+    transition: box-shadow 0.2s;
+  }
+  .hospital-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.07); }
+  .hospital-card.fastest { border-color: var(--red); border-width: 1.5px; }
+  .eta-circle {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .eta-mins { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 17px; line-height: 1; }
+  .eta-label { font-size: 9px; margin-top: 2px; opacity: 0.8; }
+  .hosp-name { font-weight: 500; font-size: 14px; }
+  .hosp-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .map-btn {
+    margin-left: auto;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    color: var(--text);
+    text-decoration: none;
+    display: flex; align-items: center; gap: 5px;
+    flex-shrink: 0;
+  }
+  .icu-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 10px; font-weight: 500;
+    padding: 2px 7px; border-radius: 6px;
+    background: var(--amber-soft); color: var(--amber);
+    margin-top: 4px;
+  }
+
+  /* Home */
+  .hero {
+    background: linear-gradient(135deg, var(--red) 0%, #C42E20 100%);
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    color: #fff;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '+';
+    position: absolute;
+    right: 20px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 80px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    opacity: 0.12;
+    line-height: 1;
+  }
+  .hero h2 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+  .hero p { font-size: 13px; opacity: 0.85; line-height: 1.5; max-width: 260px; }
+  .quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .quick-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .quick-card:hover { border-color: var(--red); background: var(--red-soft); }
+  .quick-icon { font-size: 22px; margin-bottom: 8px; }
+  .quick-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; }
+  .quick-desc { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .stat-row { display: flex; gap: 10px; margin-bottom: 12px; }
+  .stat-box { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center; }
+  .stat-num { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--red); }
+  .stat-lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">M</div>
+  <div>
+    <h1>MediReach</h1>
+    <p>Emergency Healthcare System</p>
+  </div>
+  <button class="emergency-btn" onclick="showTab('routing')"> Emergency</button>
+</header>
+
+<nav>
+  <button class="active" onclick="showTab('home')" id="tab-home"> Home</button>
+  <button onclick="showTab('symptom')" id="tab-symptom"> Symptoms</button>
+  <button onclick="showTab('doctors')" id="tab-doctors"> Doctors</button>
+  <button onclick="showTab('blood')" id="tab-blood"> Blood Bank</button>
+  <button onclick="showTab('routing')" id="tab-routing"> Emergency</button>
+</nav>
+
+<main>
+
+  <!-- HOME TAB -->
+  <div class="tab-content active" id="home">
+    <div style="height:14px"></div>
+    <div class="hero">
+      <h2>Your Emergency<br>Health Companion</h2>
+      <p>Find nearest hospitals, check doctor availability & blood supply in real time.</p>
+    </div>
+    <div class="stat-row">
+      <div class="stat-box"><div class="stat-num">3</div><div class="stat-lbl">Hospitals Nearby</div></div>
+      <div class="stat-box"><div class="stat-num" id="avail-count">—</div><div class="stat-lbl">Doctors On Duty</div></div>
+      <div class="stat-box"><div class="stat-num">5</div><div class="stat-lbl">Blood Groups Available</div></div>
+    </div>
+    <p class="section-label">Quick Access</p>
+    <div class="quick-grid">
+      <div class="quick-card" onclick="showTab('symptom')">
+        <div class="quick-icon"></div>
+        <div class="quick-title">Symptom Check</div>
+        <div class="quick-desc">Get department suggestion</div>
+      </div>
+      <div class="quick-card" onclick="showTab('routing')">
+        <div class="quick-icon"></div>
+        <div class="quick-title">Emergency Route</div>
+        <div class="quick-desc">Nearest hospital with ICU</div>
+      </div>
+      <div class="quick-card" onclick="showTab('doctors')">
+        <div class="quick-icon"></div>
+        <div class="quick-title">Doctor Shifts</div>
+        <div class="quick-desc">Who's available now</div>
+      </div>
+      <div class="quick-card" onclick="showTab('blood')">
+        <div class="quick-icon"></div>
+        <div class="quick-title">Blood Bank</div>
+        <div class="quick-desc">Check availability</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SYMPTOM CHECKER TAB -->
+  <div class="tab-content" id="symptom">
+    <div style="height:14px"></div>
+    <div class="card">
+      <div class="card-title"> Symptom Checker</div>
+      <div class="card-sub">Type your symptoms or tap a suggestion below</div>
+      <input class="symptom-input" id="symptomInput" placeholder="e.g. fever, chest pain, headache..." />
+      <div class="chip-row">
+        <span class="chip" onclick="addSymptom('fever')">Fever</span>
+        <span class="chip" onclick="addSymptom('chest pain')">Chest Pain</span>
+        <span class="chip" onclick="addSymptom('headache')">Headache</span>
+        <span class="chip" onclick="addSymptom('bleeding')">Bleeding</span>
+        <span class="chip" onclick="addSymptom('breathlessness')">Breathlessness</span>
+        <span class="chip" onclick="addSymptom('vomiting')">Vomiting</span>
+        <span class="chip" onclick="addSymptom('eye pain')">Eye Pain</span>
+        <span class="chip" onclick="addSymptom('fracture')">Fracture</span>
+        <span class="chip" onclick="addSymptom('skin rash')">Skin Rash</span>
+        <span class="chip" onclick="addSymptom('stomach pain')">Stomach Pain</span>
+      </div>
+      <button class="check-btn" onclick="checkSymptoms()">Check Symptoms →</button>
+      <div class="result-box" id="symptomResult"></div>
+    </div>
+  </div>
+
+  <!-- DOCTORS TAB -->
+  <div class="tab-content" id="doctors">
+    <div style="height:14px"></div>
+    <div class="card" style="padding:14px 18px 8px">
+      <div class="card-title"> Shift Hours</div>
+      <div class="card-sub" style="margin-bottom:8px">Morning: 9:00 AM – 2:00 PM &nbsp;|&nbsp; Evening: 4:00 PM – 8:00 PM</div>
+    </div>
+    <div class="card" id="doctorList"></div>
+  </div>
+
+  <!-- BLOOD BANK TAB -->
+  <div class="tab-content" id="blood">
+    <div style="height:14px"></div>
+    <div id="bloodContent"></div>
+  </div>
+
+  <!-- EMERGENCY ROUTING TAB -->
+  <div class="tab-content" id="routing">
+    <div style="height:14px"></div>
+    <div class="card" style="background:var(--red-soft);border-color:var(--red-mid)">
+      <div class="card-title" style="color:var(--red)"> Emergency Routing</div>
+      <div class="card-sub">Nearest hospitals sorted by travel time. Tap "Directions" to open Google Maps.</div>
+    </div>
+    <div id="hospitalList"></div>
+  </div>
+
+</main>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+
+const doctors = [
+  { name: "Dr. Ramesh Kumar",    dept: "General Physician",  shift: [9,14],  shift2: [16,20], emergency: true,  color:"#E6F1FB", text:"#185FA5" },
+  { name: "Dr. Priya Sharma",   dept: "Cardiologist",       shift: [9,14],  shift2: null,    emergency: true,  color:"#FAEEDA", text:"#854F0B" },
+  { name: "Dr. Arun Mehta",     dept: "Orthopedics",        shift: [16,20], shift2: null,    emergency: false, color:"#E1F5EE", text:"#0F6E56" },
+  { name: "Dr. Sunita Reddy",   dept: "Pediatrics",         shift: [9,14],  shift2: [16,20], emergency: false, color:"#EEEDFE", text:"#534AB7" },
+  { name: "Dr. Farhan Ali",     dept: "Emergency Medicine", shift: [9,20],  shift2: null,    emergency: true,  color:"#FAECE7", text:"#993C1D" },
+  { name: "Dr. Lakshmi Nair",   dept: "Ophthalmology",      shift: [9,14],  shift2: null,    emergency: false, color:"#EAF3DE", text:"#3B6D11" },
+  { name: "Dr. Vijay Patel",    dept: "Dermatology",        shift: [16,20], shift2: null,    emergency: false, color:"#FBEAF0", text:"#993556" },
+  { name: "Dr. Meena Das",      dept: "Gastroenterology",   shift: [9,14],  shift2: [16,20], emergency: false, color:"#E1F5EE", text:"#085041" },
+];
+
+const hospitals = [
+  { name: "AIIMS Trauma Centre",     eta: 8,  dist: "2.1 km", icu: true,  beds: 4,  maps: "AIIMS+Trauma+Centre+India" },
+  { name: "City Government Hospital",eta: 14, dist: "3.8 km", icu: true,  beds: 2,  maps: "City+Government+Hospital+India" },
+  { name: "Apollo Emergency",        eta: 19, dist: "5.2 km", icu: true,  beds: 7,  maps: "Apollo+Hospital+India" },
+];
+
+const bloodData = [
+  {
+    hospital: "AIIMS Blood Bank",
+    phone: "+91 98765 43210",
+    groups: { "A+": true, "A−": false, "B+": true, "B−": true, "O+": true, "O−": false, "AB+": true, "AB−": false }
+  },
+  {
+    hospital: "City Hospital Blood Bank",
+    phone: "+91 87654 32109",
+    groups: { "A+": true, "A−": true, "B+": false, "B−": false, "O+": true, "O−": true, "AB+": false, "AB−": true }
+  },
+  {
+    hospital: "Regional Donor Centre",
+    phone: "+91 76543 21098",
+    groups: { "A+": false, "A−": true, "B+": true, "B−": true, "O+": false, "O−": true, "AB+": true, "AB−": true }
+  }
+];
+
+const donors = [
+  { name: "Ravi Shankar",   blood: "O−", phone: "+91 99887 76655", area: "Kakinada" },
+  { name: "Ananya Iyer",    blood: "AB+", phone: "+91 88776 65544", area: "Peddapuram" },
+  { name: "Mohammed Siddiq",blood: "B+", phone: "+91 77665 54433", area: "Rajahmundry" },
+  { name: "Kavitha Rao",    blood: "A+", phone: "+91 66554 43322", area: "Amalapuram" },
+];
+
+const symptomMap = [
+  { keywords: ["chest pain","heart","palpitation","breathlessness"],  dept: "Cardiology",        urgency: "high",   action: "Go to Emergency immediately", icon: "❤️" },
+  { keywords: ["bleeding","accident","fracture","unconscious","fall"], dept: "Emergency / Trauma", urgency: "high",   action: "Call ambulance now: 108",     icon: "🚨" },
+  { keywords: ["fever","cold","cough","flu","headache","bodyache"],    dept: "General Physician",  urgency: "medium", action: "Visit OPD within today",      icon: "🌡️" },
+  { keywords: ["eye pain","blurred vision","eye redness"],            dept: "Ophthalmology",      urgency: "medium", action: "Visit eye OPD today",         icon: "👁️" },
+  { keywords: ["skin rash","itching","allergy"],                       dept: "Dermatology",        urgency: "low",    action: "Schedule appointment",        icon: "🩺" },
+  { keywords: ["vomiting","stomach pain","diarrhea","nausea"],        dept: "Gastroenterology",   urgency: "medium", action: "Visit OPD or nearest clinic",  icon: "🫁" },
+  { keywords: ["child","baby","infant","kid"],                         dept: "Pediatrics",         urgency: "medium", action: "Visit pediatric OPD",         icon: "👶" },
+];
+
+// ─── TAB SWITCHING ────────────────────────────────────────────────────────────
+
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('tab-' + id).classList.add('active');
+}
+
+// ─── SYMPTOM CHECKER ─────────────────────────────────────────────────────────
+
+function addSymptom(s) {
+  const inp = document.getElementById('symptomInput');
+  inp.value = inp.value ? inp.value + ', ' + s : s;
+}
+
+function checkSymptoms() {
+  const input = document.getElementById('symptomInput').value.toLowerCase();
+  if (!input.trim()) { alert('Please enter at least one symptom.'); return; }
+
+  let match = null;
+  for (const rule of symptomMap) {
+    if (rule.keywords.some(k => input.includes(k))) { match = rule; break; }
+  }
+
+  const box = document.getElementById('symptomResult');
+  if (!match) {
+    box.className = 'result-box show';
+    box.style.background = '#F7F5F2';
+    box.innerHTML = `<div class="result-dept" style="color:var(--muted)">General Physician</div>
+      <div style="font-size:13px;color:var(--muted)">No specific match. Please visit General OPD for evaluation.</div>`;
+    return;
+  }
+
+  const colors = { high: ['#FFF0EE','#E8392A'], medium: ['#FFF4E5','#E07B12'], low: ['#E8F8F1','#1A9E6E'] };
+  const [bg, col] = colors[match.urgency];
+  box.className = 'result-box show';
+  box.style.background = bg;
+  box.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <span style="font-size:22px">${match.icon}</span>
+      <span class="badge ${match.urgency==='high'?'badge-red':match.urgency==='medium'?'badge-amber':'badge-green'}">
+        <span class="dot"></span> ${match.urgency.toUpperCase()} PRIORITY
+      </span>
+    </div>
+    <div class="result-dept" style="color:${col}">${match.dept}</div>
+    <div class="result-action" style="color:${col};opacity:0.85">→ ${match.action}</div>
+  `;
+}
+
+// ─── DOCTORS ─────────────────────────────────────────────────────────────────
+
+function isAvailable(doc) {
+  const h = new Date().getHours();
+  const inShift1 = h >= doc.shift[0] && h < doc.shift[1];
+  const inShift2 = doc.shift2 && h >= doc.shift2[0] && h < doc.shift2[1];
+  return inShift1 || inShift2;
+}
+
+function renderDoctors() {
+  const list = document.getElementById('doctorList');
+  const available = doctors.filter(isAvailable).length;
+  document.getElementById('avail-count').textContent = available;
+
+  list.innerHTML = `<div class="card-title" style="margin-bottom:14px">👨‍⚕️ Doctors On Duty</div>` +
+    doctors.map(d => {
+      const avail = isAvailable(d);
+      const initials = d.name.split(' ').slice(1,3).map(x=>x[0]).join('');
+      const shift2txt = d.shift2 ? ` / ${d.shift2[0]}:00–${d.shift2[1]}:00` : '';
+      return `<div class="doctor-row">
+        <div class="avatar" style="background:${d.color};color:${d.text}">${initials}</div>
+        <div class="doctor-info">
+          <div class="doctor-name">${d.name}</div>
+          <div class="doctor-dept">${d.dept}</div>
+          <div class="doctor-shift">Shift: ${d.shift[0]}:00–${d.shift[1]}:00${shift2txt}${d.emergency?' · 🔴 On-call':''}</div>
+        </div>
+        <span class="badge ${avail?'badge-green':'badge-red'}">
+          <span class="dot"></span> ${avail?'Available':'Off Duty'}
+        </span>
+      </div>`;
+    }).join('');
+}
+
+// ─── BLOOD BANK ───────────────────────────────────────────────────────────────
+
+function renderBlood() {
+  const container = document.getElementById('bloodContent');
+  let html = '';
+
+  bloodData.forEach(b => {
+    html += `<div class="card"><div class="card-title">🏥 ${b.hospital}</div>
+      <div class="blood-grid">
+        ${Object.entries(b.groups).map(([grp, avail]) => `
+          <div class="blood-cell ${avail?'avail':'unavail'}">
+            <div class="bg">${grp}</div>
+            <div class="bstatus">${avail?'Available':'Unavailable'}</div>
+          </div>`).join('')}
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">📞 Emergency: <strong>${b.phone}</strong></div>
+    </div>`;
+  });
+
+  html += `<p class="section-label">Emergency Donors</p><div class="card">`;
+  html += donors.map(d => `
+    <div class="donor-row">
+      <div>
+        <div style="font-weight:500">${d.name}</div>
+        <div style="font-size:11px;color:var(--muted)">${d.blood} &nbsp;·&nbsp; ${d.area}</div>
+      </div>
+      <button class="call-btn" onclick="window.location='tel:${d.phone}'">📞 Call</button>
+    </div>`).join('');
+  html += `</div>`;
+
+  container.innerHTML = html;
+}
+
+// ─── EMERGENCY ROUTING ────────────────────────────────────────────────────────
+
+function renderHospitals() {
+  const list = document.getElementById('hospitalList');
+  list.innerHTML = hospitals.map((h, i) => `
+    <div class="hospital-card ${i===0?'fastest':''}">
+      <div class="eta-circle" style="background:${i===0?'var(--red-soft)':'var(--bg)'}">
+        <div class="eta-mins" style="color:${i===0?'var(--red)':'var(--text)'}">${h.eta}</div>
+        <div class="eta-label" style="color:${i===0?'var(--red)':'var(--muted)'}">min</div>
+      </div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="hosp-name">${h.name}</div>
+          ${i===0?'<span class="badge badge-red" style="font-size:10px;padding:2px 7px"><span class="dot"></span>Fastest</span>':''}
+        </div>
+        <div class="hosp-meta">${h.dist} away</div>
+        ${h.icu?`<span class="icu-badge">🛏 ICU · ${h.beds} beds available</span>`:''}
+      </div>
+      <a class="map-btn" href="https://maps.google.com/?q=${h.maps}" target="_blank">🗺 Directions</a>
+    </div>`).join('');
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+
+renderDoctors();
+renderBlood();
+renderHospitals();
+</script>
+</body>
+</html>
